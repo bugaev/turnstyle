@@ -23,15 +23,30 @@ impl MyList {
     }
 }
 
+
+
 fn main() {
 
-    // let mut all_nodes: Vec<Box<MyList>> = Vec::new();
-    let root_node = Box::new(MyList::new(0));
-    let child1 = Box::new(MyList::new_child(1, root_node));
-    let child2 = Box::new(MyList::new_child(2,child1));
-    let mut child3 = Box::new(MyList::new(3));
-    child3.become_child_of(child2);
-    println!("last node: {:?}", child3);
+    let mut all_nodes: Vec<Box<MyList>> = Vec::new();
+    let node = Box::new(MyList::new(0));
+    let node = Box::new(MyList::new_child(1,node));
+    let node = Box::new(MyList::new_child(2, node));
+    let mut adopted = Box::new(MyList::new(3));
+    adopted.become_child_of(node);
+    all_nodes.push(adopted);
+
+    let node = Box::new(MyList::new(0));
+    let node = Box::new(MyList::new_child(4,node));
+    let node = Box::new(MyList::new_child(5, node));
+    let mut adopted = Box::new(MyList::new(6));
+    adopted.become_child_of(node);
+    all_nodes.push(adopted);
+
+    for child in all_nodes.iter_mut() {
+        child.value = child.value + 100;
+        println!("child: {:?}", child);
+    }
+    // println!("last node: {:?}", child3);
     println!("Success!");
 
 }
