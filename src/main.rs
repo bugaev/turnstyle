@@ -1,28 +1,52 @@
 use std::rc::Rc;
 
 #[derive(Debug)]
+enum RotDir {
+    Cw,
+    Ccw,
+}
+
+#[derive(Debug)]
+enum ShiftDir {
+    Left,
+    Right
+}
+
+#[derive(Debug)]
+enum Operation {
+    Shift(ShiftDir),
+    Rotation(RotDir),
+    Nop,
+}
+
+#[derive(Debug)]
 struct MyList {
+    op: Operation,
     parent: Option<Rc<MyList>>,
     value: i32,
 }
 impl MyList {
+
+    const OPERATIONS: [Operation; 4] =
+        [Operation::Shift(ShiftDir::Left), Operation::Shift(ShiftDir::Right), Operation::Rotation(RotDir::Cw), Operation::Rotation(RotDir::Ccw)];
+
+
     fn new(value: i32) -> Self {
         Self {
+           op: Operation::Nop,
            parent: None,
            value,
         }
     }
 
-    fn new_child(value: i32, parent: &Rc<MyList>) -> Self {
+    fn new_child(value: i32, op: Operation, parent: &Rc<MyList>) -> Self {
         Self {
+           op,
            parent: Some(Rc::clone(parent)),
            value,
         }
     }
    
-    // fn become_child_of(&mut self, parent: Box<MyList>) {
-    //     self.parent = Some(parent);
-    // }
 }
 
 fn path_to_top(node_arg: &Rc<MyList>) {
@@ -46,11 +70,12 @@ fn main() {
 
     let mut all_nodes: Vec<Box<MyList>> = Vec::new();
     let node = Rc::new(MyList::new(0));
-    let node1 = Rc::new(MyList::new_child(1, &node));
-    let node2 = Rc::new(MyList::new_child(2, &node));
-    println!("node: {:?}", node1);
-    println!("node: {:?}", node2);
+    let node1 = Rc::new(MyList::new_child(1, Operation::Shift(ShiftDir::Left), &node));
     path_to_top(&node1);
+
+    // let node2 = Rc::new(MyList::new_child(2, &node));
+    // println!("node: {:?}", node1);
+    // println!("node: {:?}", node2);
 
     // let node = Box::new(MyList::new(0));
     // let node = Box::new(MyList::new_child(4,node));
