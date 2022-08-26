@@ -1,12 +1,6 @@
 use std::rc::Rc;
 
 #[derive(Debug)]
-enum RotDir {
-    Cw,
-    Ccw,
-}
-
-#[derive(Debug)]
 enum ShiftDir {
     Left,
     Right
@@ -15,7 +9,7 @@ enum ShiftDir {
 #[derive(Debug)]
 enum Operation {
     Shift(ShiftDir),
-    Rotation(RotDir),
+    Rotation,
     Nop,
 }
 
@@ -28,8 +22,8 @@ struct MyList {
 }
 impl MyList {
 
-    const OPERATIONS: [Operation; 4] =
-        [Operation::Shift(ShiftDir::Left), Operation::Shift(ShiftDir::Right), Operation::Rotation(RotDir::Cw), Operation::Rotation(RotDir::Ccw)];
+    const OPERATIONS: [Operation; 3] =
+        [Operation::Shift(ShiftDir::Left), Operation::Shift(ShiftDir::Right), Operation::Rotation];
 
 
     fn new(value: i32, state: [u8; 12]) -> Self {
@@ -100,17 +94,27 @@ fn rotation(node: &MyList) -> [u8; 12] {
     res
 }
 
+fn transform(op: Operation, node: &MyList) -> [u8; 12] {
+    match op  {
+        Operation::Rotation => rotation(node),
+        Operation::Shift(dir) => shift(dir, node),
+        Operation::Nop => [0; 12],
+    }
+
+}
+
 fn main() {
+    let solved: [u8; 12] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    
+    let root_node = Rc::new(MyList::new(0, [1, 6, 5, 7, 8, 9, 10, 11, 3, 4, 12, 2]));
 
-    let root_node = Rc::new(MyList::new(0, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]));
-
-    let shifted_left = shift(ShiftDir::Left, &root_node);
+    let shifted_left = transform(Operation::Shift(ShiftDir::Left), &root_node);
     println!("shifted left: {:?}", shifted_left);
 
-    let shifted_right = shift(ShiftDir::Right, &root_node);
+    let shifted_right = transform(Operation::Shift(ShiftDir::Right), &root_node);
     println!("shifted right: {:?}", shifted_right);
 
-    let rotated = rotation(&root_node);
+    let rotated = transform(Operation::Rotation, &root_node);
     println!("rotated: {:?}", rotated);
 
     let mut all_nodes1: Vec<Rc<MyList>> = Vec::new();
