@@ -88,6 +88,18 @@ fn shift(dir: ShiftDir, node: &MyList) -> [u8; 12] {
     res
 }
 
+fn rotation(node: &MyList) -> [u8; 12] {
+    let mut res: [u8; 12] = [0; 12];
+    for ind in 4..res.len() {
+        res[ind] = node.state[ind];
+    }
+    res[0] = node.state[1];
+    res[1] = node.state[0];
+    res[2] = node.state[3];
+    res[3] = node.state[2];
+    res
+}
+
 fn main() {
 
     let root_node = Rc::new(MyList::new(0, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]));
@@ -97,6 +109,9 @@ fn main() {
 
     let shifted_right = shift(ShiftDir::Right, &root_node);
     println!("shifted right: {:?}", shifted_right);
+
+    let rotated = rotation(&root_node);
+    println!("rotated: {:?}", rotated);
 
     let mut all_nodes1: Vec<Rc<MyList>> = Vec::new();
     all_nodes1.push(root_node);
