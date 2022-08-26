@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::{rc::Rc,}; // process::exit};
 
 #[derive(Debug)]
 enum ShiftDir {
@@ -102,39 +102,47 @@ fn transform(op: &Operation, node: &MyList) -> [u8; 12] {
 
 fn main() {
     let solved: [u8; 12] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    // let solved: [u8; 12] = [2, 1, 6, 5, 7, 8, 9, 10, 11, 3, 4, 12];
     
-    let root_node = Rc::new(MyList::new([1, 6, 5, 7, 8, 9, 10, 11, 3, 4, 12, 2]));
+    let root_node = Rc::new(MyList::new([1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 9, 10]));
 
-    let shifted_left = transform(&Operation::Shift(ShiftDir::Left), &root_node);
-    println!("shifted left: {:?}", shifted_left);
+    // let shifted_left = transform(&Operation::Shift(ShiftDir::Left), &root_node);
+    // println!("shifted left: {:?}", shifted_left);
 
-    let shifted_right = transform(&Operation::Shift(ShiftDir::Right), &root_node);
-    println!("shifted right: {:?}", shifted_right);
+    // let shifted_right = transform(&Operation::Shift(ShiftDir::Right), &root_node);
+    // println!("shifted right: {:?}", shifted_right);
 
-    let rotated = transform(&Operation::Rotation, &root_node);
-    println!("rotated: {:?}", rotated);
+    // let rotated = transform(&Operation::Rotation, &root_node);
+    // println!("rotated: {:?}", rotated);
 
     let mut all_nodes1: Vec<Rc<MyList>> = Vec::new();
     all_nodes1.push(root_node);
 
 
     let mut cnt = 0;
-    for generation in 1..4 {
+    'generations: for generation in 1..19 {
         let mut all_nodes2: Vec<Rc<MyList>> = Vec::new();
         println!("---------- Generation {} -----------", generation);
         for child in all_nodes1.iter() {
             for op in MyList::OPERATIONS {
                 cnt = cnt + 1;
                 all_nodes2.push(Rc::new(MyList::new_child(op, child)));
+                let last_node = &all_nodes2[all_nodes2.len() - 1];
+                if last_node.state == solved {
+                   path_to_top(last_node); 
+                    println!("!!! Success !!!");
+                   break 'generations;
+                   // exit(0);
+                }
                 // println!("cnt: {}", cnt);
             }
         }
         all_nodes1 = all_nodes2;
     }
 
-    path_to_top(&all_nodes1[all_nodes1.len() - 1]);
+    // path_to_top(&all_nodes1[all_nodes1.len() - 1]);
 
 
-    println!("Success!");
+    println!("End of the program.");
 
 }
