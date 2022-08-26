@@ -91,22 +91,6 @@ fn main() {
 
     path_to_top(&all_nodes1[all_nodes1.len() - 1]);
 
-    // let node2 = Rc::new(MyList::new_child(2, &node));
-    // println!("node: {:?}", node1);
-    // println!("node: {:?}", node2);
-
-    // let node = Box::new(MyList::new(0));
-    // let node = Box::new(MyList::new_child(4,node));
-    // let node = Box::new(MyList::new_child(5, node));
-    // let mut adopted = Box::new(MyList::new(6));
-    // adopted.become_child_of(node);
-    // all_nodes.push(adopted);
-
-    // for child in all_nodes.iter_mut() {
-    //     child.value = child.value + 100;
-    //     println!("child: {:?}", child);
-    // }
-    // println!("last node: {:?}", child3);
     println!("Success!");
 
 }
