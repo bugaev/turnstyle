@@ -18,7 +18,6 @@ struct MyList {
     state: [u8; 12],
     op: Operation,
     parent: Option<Rc<MyList>>,
-    value: i32,
 }
 impl MyList {
 
@@ -26,21 +25,19 @@ impl MyList {
         [Operation::Shift(ShiftDir::Left), Operation::Shift(ShiftDir::Right), Operation::Rotation];
 
 
-    fn new(value: i32, state: [u8; 12]) -> Self {
+    fn new(state: [u8; 12]) -> Self {
         Self {
            state,
            op: Operation::Nop,
            parent: None,
-           value,
         }
     }
 
-    fn new_child(value: i32, op: Operation, parent: &Rc<MyList>) -> Self {
+    fn new_child(op: Operation, parent: &Rc<MyList>) -> Self {
         Self {
-           state: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-           op,
-           parent: Some(Rc::clone(parent)),
-           value,
+            state: transform(&op, parent),
+            op,
+            parent: Some(Rc::clone(parent)),
         }
     }
    
@@ -49,11 +46,11 @@ impl MyList {
 fn path_to_top(node_arg: &Rc<MyList>) {
 
     let mut node: &Rc<MyList> = node_arg;
-    let mut value: i32;
+    let mut op;
 
     loop {
-        value = node.value;
-        println!("{}", value);
+        op = &node.op;
+        println!("{:?}", op);
         match &node.parent  {
             None => return (),
             Some(parent) => node = &parent,
@@ -61,7 +58,7 @@ fn path_to_top(node_arg: &Rc<MyList>) {
     }
 }
 
-fn shift(dir: ShiftDir, node: &MyList) -> [u8; 12] {
+fn shift(dir: &ShiftDir, node: &MyList) -> [u8; 12] {
     let mut res: [u8; 12] = [0; 12];
     match dir  {
         ShiftDir::Left =>
@@ -94,7 +91,7 @@ fn rotation(node: &MyList) -> [u8; 12] {
     res
 }
 
-fn transform(op: Operation, node: &MyList) -> [u8; 12] {
+fn transform(op: &Operation, node: &MyList) -> [u8; 12] {
     match op  {
         Operation::Rotation => rotation(node),
         Operation::Shift(dir) => shift(dir, node),
@@ -106,15 +103,15 @@ fn transform(op: Operation, node: &MyList) -> [u8; 12] {
 fn main() {
     let solved: [u8; 12] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     
-    let root_node = Rc::new(MyList::new(0, [1, 6, 5, 7, 8, 9, 10, 11, 3, 4, 12, 2]));
+    let root_node = Rc::new(MyList::new([1, 6, 5, 7, 8, 9, 10, 11, 3, 4, 12, 2]));
 
-    let shifted_left = transform(Operation::Shift(ShiftDir::Left), &root_node);
+    let shifted_left = transform(&Operation::Shift(ShiftDir::Left), &root_node);
     println!("shifted left: {:?}", shifted_left);
 
-    let shifted_right = transform(Operation::Shift(ShiftDir::Right), &root_node);
+    let shifted_right = transform(&Operation::Shift(ShiftDir::Right), &root_node);
     println!("shifted right: {:?}", shifted_right);
 
-    let rotated = transform(Operation::Rotation, &root_node);
+    let rotated = transform(&Operation::Rotation, &root_node);
     println!("rotated: {:?}", rotated);
 
     let mut all_nodes1: Vec<Rc<MyList>> = Vec::new();
@@ -128,7 +125,7 @@ fn main() {
         for child in all_nodes1.iter() {
             for op in MyList::OPERATIONS {
                 cnt = cnt + 1;
-                all_nodes2.push(Rc::new(MyList::new_child(cnt, op, child)));
+                all_nodes2.push(Rc::new(MyList::new_child(op, child)));
                 // println!("cnt: {}", cnt);
             }
         }
