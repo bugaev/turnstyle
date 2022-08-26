@@ -68,29 +68,28 @@ fn path_to_top(node_arg: &Rc<MyList>) {
 
 fn main() {
 
-    let mut all_nodes: Vec<Rc<MyList>> = Vec::new();
-    let node = Rc::new(MyList::new(0));
-    let node1 = Rc::new(MyList::new_child(1, Operation::Shift(ShiftDir::Left), &node));
+    let root_node = Rc::new(MyList::new(0));
+    // let node1 = Rc::new(MyList::new_child(1, Operation::Shift(ShiftDir::Left), &node));
+
+    let mut all_nodes1: Vec<Rc<MyList>> = Vec::new();
+    all_nodes1.push(root_node);
+
 
     let mut cnt = 0;
-    for op in MyList::OPERATIONS {
-        cnt = cnt + 1;
-        all_nodes.push(Rc::new(MyList::new_child(1, op, &node)));
-        println!("cnt: {}", cnt);
-    }
-
-    let mut all_nodes2: Vec<Rc<MyList>> = Vec::new();
-
-    for child in all_nodes.iter() {
-        for op in MyList::OPERATIONS {
-            cnt = cnt + 1;
-            all_nodes2.push(Rc::new(MyList::new_child(cnt, op, child)));
-            println!("cnt: {}", cnt);
+    for generation in (1..4) {
+        let mut all_nodes2: Vec<Rc<MyList>> = Vec::new();
+        println!("---------- Generation {} -----------", generation);
+        for child in all_nodes1.iter() {
+            for op in MyList::OPERATIONS {
+                cnt = cnt + 1;
+                all_nodes2.push(Rc::new(MyList::new_child(cnt, op, child)));
+                // println!("cnt: {}", cnt);
+            }
         }
+        all_nodes1 = all_nodes2;
     }
-    path_to_top(&all_nodes2[all_nodes2.len() - 1]);
-    all_nodes = all_nodes2;
-    path_to_top(&all_nodes[all_nodes.len() - 1]);
+
+    path_to_top(&all_nodes1[all_nodes1.len() - 1]);
 
     // let node2 = Rc::new(MyList::new_child(2, &node));
     // println!("node: {:?}", node1);
