@@ -1,4 +1,5 @@
 # Example output of the program
+```
 ---------- Generation 1 -----------
 ---------- Generation 2 -----------
 ---------- Generation 3 -----------
@@ -28,3 +29,4 @@ Shift(Right)
 Nop
 !!! Success !!!
 End of the program.
+```
