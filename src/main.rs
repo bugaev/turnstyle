@@ -1,4 +1,8 @@
-use std::{rc::Rc,}; // process::exit};
+const MAX_DEPTH: u16 = 4; // 20;
+
+use std::{rc::Rc, process::exit,}; // process::exit};
+
+type State = [u8; 12];
 
 #[derive(Debug)]
 enum ShiftDir {
@@ -79,6 +83,27 @@ fn shift(dir: &ShiftDir, node: &MyList) -> [u8; 12] {
     res
 }
 
+fn state_shift(dir: &ShiftDir, state: &State) -> State {
+    let mut res: State = [0; 12];
+    match dir  {
+        ShiftDir::Left =>
+        {
+            for ind in 0..res.len() - 1 {
+                res[ind] = state[ind + 1];
+            }
+            res[res.len() - 1] = state[0];
+        },
+        ShiftDir::Right => 
+        {
+            for ind in 1..res.len() {
+                res[ind] = state[ind - 1];
+            }
+            res[0] = state[res.len() - 1];
+        },
+    }
+    res
+}
+
 fn rotation(node: &MyList) -> [u8; 12] {
     let mut res: [u8; 12] = [0; 12];
     for ind in 4..res.len() {
@@ -91,6 +116,18 @@ fn rotation(node: &MyList) -> [u8; 12] {
     res
 }
 
+fn state_rotation(state: &State) -> State {
+    let mut res: State = [0; 12];
+    for ind in 4..res.len() {
+        res[ind] = state[ind];
+    }
+    res[0] = state[1];
+    res[1] = state[0];
+    res[2] = state[3];
+    res[3] = state[2];
+    res
+}
+
 fn transform(op: &Operation, node: &MyList) -> [u8; 12] {
     match op  {
         Operation::Rotation => rotation(node),
@@ -100,20 +137,70 @@ fn transform(op: &Operation, node: &MyList) -> [u8; 12] {
 
 }
 
+// HERE ->
+fn state_transform(op: &Operation, state: &State) -> State {
+    match op  {
+        Operation::Rotation => state_rotation(state),
+        Operation::Shift(dir) => state_shift(dir, state),
+        Operation::Nop => [0; 12],
+    }
+}
+
+// state is passed by value: https://stackoverflow.com/a/68217529
+fn test_solution(depth: u16, mut path: Vec<Operation>, state: &State, solved: &State) -> Vec<Operation> {
+    if depth > MAX_DEPTH { return path; };
+    // if depth == 4 { println!("{:?}", path) }
+    // println!("{:?}", state);
+    let last_state_opt = path.last();
+    match last_state_opt {
+        None => {
+            println!("ERROR: Did you forget to init the path with Nop?");
+            exit(1);
+        }, 
+        Some(op) => {
+            let mut mutate_state = true;
+            let new_state;
+            // Seems OK to mix op: &Operation and Operation::Nop?
+            if let Operation::Nop = op {
+                mutate_state = false
+            }
+            
+            if mutate_state {
+                new_state = state_transform(op, state);
+                
+                if new_state == *solved {
+                    println!("Solution: {:?}", path);
+                };
+            } else {
+                new_state = *state;
+            };
+
+            for nextop in vec![Operation::Rotation, Operation::Shift(ShiftDir::Right)] {
+                path.push(nextop);
+                path = test_solution(depth + 1, path, &new_state, solved);
+                path.pop();
+            }
+    }
+    }
+    path
+}
+
 fn main() {
+
+    println!("Start of the program.");
+
     let solved: [u8; 12] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     // let solved: [u8; 12] = [2, 1, 6, 5, 7, 8, 9, 10, 11, 3, 4, 12];
     
     let root_node = Rc::new(MyList::new([1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 9, 10]));
 
-    // let shifted_left = transform(&Operation::Shift(ShiftDir::Left), &root_node);
-    // println!("shifted left: {:?}", shifted_left);
+    let path: Vec<Operation> = vec![Operation::Nop];
+    // test_solution(1, path, &[1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 9, 10], &solved);
+    test_solution(1, path, &[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1], &solved);
 
-    // let shifted_right = transform(&Operation::Shift(ShiftDir::Right), &root_node);
-    // println!("shifted right: {:?}", shifted_right);
+    println!("End of the program.");
 
-    // let rotated = transform(&Operation::Rotation, &root_node);
-    // println!("rotated: {:?}", rotated);
+    exit(0);
 
     let mut all_nodes1: Vec<Rc<MyList>> = Vec::new();
     all_nodes1.push(root_node);
