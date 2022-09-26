@@ -1,4 +1,4 @@
-const MAX_DEPTH: u16 = 20;
+const MAX_DEPTH: u16 = 30;
 const MAX_SHIFTS: u8 = 11;
 
 use std::{rc::Rc, process::exit,}; // process::exit};
@@ -216,7 +216,8 @@ fn main() {
 
     let path: Vec<Operation> = vec![Operation::Nop];
     // test_solution(1, path, &[1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 9, 10], &solved);
-    test_solution(1, path, &[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1], &solved, 0, 0);
+    // test_solution(1, path, &[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1], &solved, 0, 0);
+    test_solution(1, path, &[3, 12, 5, 1, 2, 4, 8, 6, 10, 7, 9, 11], &solved, 0, 0);
 
     println!("End of the program.");
 
