@@ -147,7 +147,7 @@ fn state_transform(op: &Operation, state: &State) -> State {
 }
 
 // state is passed by value: https://stackoverflow.com/a/68217529
-fn test_solution(depth: u16, mut path: Vec<Operation>, state: &State, solved: &State) -> Vec<Operation> {
+fn test_solution(depth: u16, mut path: Vec<Operation>, state: &State, solved: &State, mut rotations: u8, mut shifts: u8) -> Vec<Operation> {
     if depth > MAX_DEPTH { return path; };
     // if depth == 4 { println!("{:?}", path) }
     // println!("{:?}", state);
@@ -176,8 +176,13 @@ fn test_solution(depth: u16, mut path: Vec<Operation>, state: &State, solved: &S
             };
 
             for nextop in vec![Operation::Rotation, Operation::Shift(ShiftDir::Right)] {
+                match nextop  {
+                    Operation::Rotation => rotations = rotations + 1,
+                    Operation::Shift(_) => shifts = shifts + 1,
+                    Operation::Nop => (),
+                }
                 path.push(nextop);
-                path = test_solution(depth + 1, path, &new_state, solved);
+                path = test_solution(depth + 1, path, &new_state, solved, rotations, shifts);
                 path.pop();
             }
     }
@@ -196,7 +201,7 @@ fn main() {
 
     let path: Vec<Operation> = vec![Operation::Nop];
     // test_solution(1, path, &[1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 9, 10], &solved);
-    test_solution(1, path, &[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1], &solved);
+    test_solution(1, path, &[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1], &solved, 0, 0);
 
     println!("End of the program.");
 
