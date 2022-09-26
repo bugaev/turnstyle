@@ -1,4 +1,5 @@
-const MAX_DEPTH: u16 = 4; // 20;
+const MAX_DEPTH: u16 = 20;
+const MAX_SHIFTS: u8 = 11;
 
 use std::{rc::Rc, process::exit,}; // process::exit};
 
@@ -176,13 +177,27 @@ fn test_solution(depth: u16, mut path: Vec<Operation>, state: &State, solved: &S
             };
 
             for nextop in vec![Operation::Rotation, Operation::Shift(ShiftDir::Right)] {
+                let mut new_rotations: u8 = 0;
+                let mut new_shifts: u8 = 0;
                 match nextop  {
-                    Operation::Rotation => rotations = rotations + 1,
-                    Operation::Shift(_) => shifts = shifts + 1,
+                    Operation::Rotation =>
+                        if rotations == 0 {
+                            new_rotations = rotations + 1;
+                            new_shifts = 0;
+                        } else {
+                            continue
+                        },
+                    Operation::Shift(_) =>
+                        if shifts < MAX_SHIFTS - 1 {
+                            new_rotations = 0;
+                            new_shifts = shifts + 1;
+                        } else {
+                            continue
+                        },
                     Operation::Nop => (),
                 }
                 path.push(nextop);
-                path = test_solution(depth + 1, path, &new_state, solved, rotations, shifts);
+                path = test_solution(depth + 1, path, &new_state, solved, new_rotations, new_shifts);
                 path.pop();
             }
     }
