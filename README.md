@@ -3,7 +3,7 @@ Three possible actions are allowed: rotation, shift to the left, and shift to th
 <img width="243" alt="Screenshot 2023-10-11 114914" src="https://github.com/bugaev/turnstyle/assets/1672453/b249aeca-1332-4497-94ef-9d1251186d1f">
 
 # The program
-The program explores trees with with 3 child nodes in each node. Each child node corresponds to a chosen action (shifts or rotation). Both breadth-first and depth-first approaches were implemented, but the latter provides rock-solid performance. Breadth-first approach is hungry for memory and realistically, cannot allocate enough memory for trees taller than ~20 nodes.
+The program explores trees with 3 child nodes in each node. Each child node corresponds to a chosen action (shifts or rotation). Both breadth-first and depth-first approaches were implemented, but only the latter provides rock-solid performance. Breadth-first approach is hungry for memory and realistically, cannot allocate enough memory for trees taller than ~20 nodes.
 
 # Example output of the program
 ```
